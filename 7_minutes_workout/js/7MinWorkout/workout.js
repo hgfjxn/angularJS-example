@@ -197,16 +197,41 @@ angular.module('7minWorkout')
 			return workout;
 		}
 		//开始某一项锻炼
-		var startExercise = function (exercisePlan) {
+		var startExercise = function (exercisePlan){
 			$scope.currentExercise = exercisePlan;
 			$scope.currentExerciseDuration = 0;
-			$interval(function () {
-				++$scope.currentExerciseDuration;
-			}
-				, 1000
-				//设置duration每隔1000ms减1
-				, $scope.currentExercise.duration);
-		};
+			$interval(function(){
+				$scope.currentExerciseDuration +=1;
+			}, 1000, $scope.currentExercise.duration)
+			.then(function(){
+				var next = getNextExercise(exercisePlan);
+				if(next){
+					startExercise(next);
+				}else{
+					console.log("exercise complete!");
+				}
+			});
+		}
+		// var startExercise = function (exercisePlan) {
+		// 	$scope.currentExercise = exercisePlan;
+		// 	$scope.currentExerciseDuration = 0;
+		// 	$interval(function () {
+		// 		++$scope.currentExerciseDuration;
+		// 	}
+		// 		, 1000
+		// 		//设置duration每隔1000ms减1
+		// 		, $scope.currentExercise.duration);
+		// };
+		// $scope.$watch('currentExerciseDuration', function (nVal) {
+		// 	if (nVal == $scope.currentExercise.duration) {
+		// 		var next = getNextExercise($scope.currentExercise);
+		// 		if (next) {
+		// 			startExercise(next);
+		// 		} else {
+		// 			console.log("Workout complete!")
+		// 		}
+		// 	}
+		// });
 
 		//本项运动的下一项运动，只描述可能的锻炼项
 		var getNextExercise = function (currentExercisePlan) {
@@ -220,17 +245,6 @@ angular.module('7minWorkout')
 			}
 			return nextExercise;
 		};
-
-		$scope.$watch('currentExerciseDuration', function (nVal) {
-			if (nVal == $scope.currentExercise.duration) {
-				var next = getNextExercise($scope.currentExercise);
-				if (next) {
-					startExercise(next);
-				} else {
-					console.log("Workout complete!")
-				}
-			}
-		});
 		var startWorkout = function () {
 			workoutPlan = createWorkout();
 			restExercise = {
